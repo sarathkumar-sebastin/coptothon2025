@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>COPTOTHON 2025 — Drone Design & Competition</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;margin:0;background:#eef5ff;color:#033055;}
+header{background:#003366;color:#fff;text-align:center;padding:16px;}
+nav{display:flex;justify-content:center;flex-wrap:wrap;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+nav button{margin:6px;padding:10px 20px;border:none;border-radius:6px;background:#dce7ff;cursor:pointer;font-weight:600;}
+nav button.active,nav button:hover{background:#003366;color:#fff;}
+section{display:none;padding:20px;max-width:900px;margin:auto;}
+section.active{display:block;}
+input,select,textarea{padding:8px;margin:4px 0;width:100%;border:1px solid #ccc;border-radius:6px;}
+button.submit{background:#003366;color:#fff;padding:10px 20px;border:none;border-radius:6px;margin-top:8px;cursor:pointer;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th,td{border:1px solid #ccc;padding:6px;text-align:left;}
+th{background:#003366;color:#fff;}
+.adminOnly{display:none;}
+body.admin .adminOnly{display:block;}
+footer{text-align:center;font-size:13px;color:#555;margin:25px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>🚀 COPTOTHON 2025 — Drone Design & Competition</h2>
+  <div>Centre of Excellence – VINTRA 2025 · Admin: sarathkumar.j@klu.ac.in</div>
+</header>
+
+<nav>
+  <button class="tab active" data-tab="home">Home</button>
+  <button class="tab" data-tab="register">Register</button>
+  <button class="tab" data-tab="leaderboard">Leaderboard</button>
+  <button class="tab" data-tab="schedule">Schedule</button>
+  <button class="tab" data-tab="announce">Announcements</button>
+  <button class="tab" data-tab="contact">Contact</button>
+  <button class="tab adminOnly" data-tab="admin">Admin Panel</button>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="active">
+  <h3>Welcome to COPTOTHON 2025</h3>
+  <p>This interactive portal provides live registration, announcements, schedule and leaderboard for the Drone Design Challenge.</p>
+  <ul>
+    <li>📅 31 Oct – 1 Nov 2025</li>
+    <li>📍 Room 5003, KARE Campus</li>
+    <li>🛩️ Design • Fabrication • Flight Performance • Innovation</li>
+  </ul>
+</section>
+
+<!-- REGISTER -->
+<section id="register">
+  <h3>Participant Registration</h3>
+  <input id="rname" placeholder="Name" />
+  <input id="remail" placeholder="Email" />
+  <input id="rphone" placeholder="Phone" />
+  <input id="rdept" placeholder="Department" />
+  <input id="rtrack" placeholder="Track / Category" />
+  <input id="rteam" placeholder="Team Name (Choose your team)" />
+  <button class="submit" onclick="register()">Register & Save</button>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="leaderboard">
+  <h3>Leaderboard</h3>
+  <table id="tbl">
+    <thead><tr><th>Name</th><th>Team</th><th>Track</th><th>Score</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <button class="submit" onclick="loadData()">⟳ Refresh</button>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <h3>Event Schedule</h3>
+  <table id="schedTbl"><thead><tr><th>Title</th><th>When</th><th>Notes</th></tr></thead><tbody></tbody></table>
+  <div class="adminOnly">
+    <h4>Add Schedule Item</h4>
+    <input id="sTitle" placeholder="Title" />
+    <input id="sWhen" placeholder="When (eg. 31 Oct 10:00 AM)" />
+    <input id="sNotes" placeholder="Notes / Venue" />
+    <button class="submit" onclick="addSchedule()">Add Schedule</button>
+  </div>
+</section>
+
+<!-- ANNOUNCEMENTS -->
+<section id="announce">
+  <h3>Announcements</h3>
+  <ul id="annList"></ul>
+  <div class="adminOnly">
+    <h4>Post Announcement</h4>
+    <input id="aTitle" placeholder="Title" />
+    <textarea id="aBody" placeholder="Announcement details..."></textarea>
+    <button class="submit" onclick="postAnn()">Post Announcement</button>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h3>Contact / Support</h3>
+  <p>Organizer : Dr. Sarathkumar Sebastin</p>
+  <p>📞 +91 76399 72833</p>
+  <a href="https://wa.me/917639972833?text=Hello%20COPTOTHON%20Team!" target="_blank">
+    <button class="submit">Message on WhatsApp</button>
+  </a>
+</section>
+
+<!-- ADMIN -->
+<section id="admin" class="adminOnly">
+  <h3>Admin Panel (Visible only to sarathkumar.j@klu.ac.in)</h3>
+  <button class="submit" onclick="clearAll()">🧹 Clear All Data</button>
+  <p>Use Google Sheet to review participants, attendance and scores live.</p>
+</section>
+
+<footer>© 2025 Department of Aeronautical Engineering – KARE</footer>
+
+<script>
+/* === CONFIG === */
+const SCRIPT_URL = "https://script.google.com/a/macros/klu.ac.in/s/AKfycby0AePT7tudRWXQb0Q-QFAFnejtRHc7rDwsOTuw4SkL53ZAfkz6xc6WPN2mLpJ6ULGDlQ/exec";
+const ADMIN_EMAIL = "sarathkumar.j@klu.ac.in";
+let DATA = {};
+
+/* === NAVIGATION === */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* === LOAD DATA FROM SCRIPT === */
+async function loadData(){
+  const res = await fetch(SCRIPT_URL);
+  const json = await res.json();
+  DATA = json;
+  if(json.isAdmin) document.body.classList.add("admin");
+  else document.body.classList.remove("admin");
+
+  // Leaderboard
+  const body = document.querySelector('#tbl tbody');
+  body.innerHTML = "";
+  json.data.participants.sort((a,b)=>b.Score-a.Score).forEach(r=>{
+    body.insertAdjacentHTML("beforeend",
+      `<tr><td>${r.Name}</td><td>${r.Team}</td><td>${r.Track}</td><td>${r.Score}</td></tr>`);
+  });
+
+  // Announcements
+  const alist = document.getElementById('annList');
+  alist.innerHTML = "";
+  json.data.announcements.slice().reverse().forEach(a=>{
+    alist.insertAdjacentHTML("beforeend",
+      `<li><b>${a.Title}</b> – ${a.Body}</li>`);
+  });
+
+  // Schedule
+  const sbody = document.querySelector('#schedTbl tbody');
+  sbody.innerHTML = "";
+  json.data.schedule.forEach(s=>{
+    sbody.insertAdjacentHTML("beforeend",
+      `<tr><td>${s.Title}</td><td>${s.When}</td><td>${s.Notes}</td></tr>`);
+  });
+}
+window.onload = loadData;
+
+/* === REGISTRATION === */
+function register(){
+  const data = {
+    action:"register",
+    payload:{
+      name: document.getElementById('rname').value,
+      email: document.getElementById('remail').value,
+      phone: document.getElementById('rphone').value,
+      department: document.getElementById('rdept').value,
+      track: document.getElementById('rtrack').value,
+      team: document.getElementById('rteam').value
+    }
+  };
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(data)}).then(()=>{alert("✅ Registered successfully!");loadData();});
+  document.querySelectorAll('#register input').forEach(i=>i.value="");
+}
+
+/* === ANNOUNCEMENT === */
+function postAnn(){
+  const payload = {title: aTitle.value, body: aBody.value};
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"announce",payload})})
+  .then(()=>{aTitle.value="";aBody.value="";alert("📢 Announcement posted!");loadData();});
+}
+
+/* === SCHEDULE === */
+function addSchedule(){
+  const payload = {title:sTitle.value,when:sWhen.value,notes:sNotes.value};
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"schedule",payload})})
+  .then(()=>{sTitle.value=sWhen.value=sNotes.value="";alert("🕓 Schedule added!");loadData();});
+}
+
+/* === CLEAR ALL === */
+function clearAll(){
+  if(confirm("⚠️ This will erase all data. Are you sure?")){
+    fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"clear_all"})})
+    .then(()=>{alert("🧹 All data cleared!");loadData();});
+  }
+}
+</script>
+</body>
+</html>
