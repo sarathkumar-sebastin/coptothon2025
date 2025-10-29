@@ -116,11 +116,11 @@ th{background:#f0fbff}
           <h3>Register (Participants)</h3>
           <div class="small">Fill details once. Reg. No = your registration number (college reg no).</div>
           <input id="name" placeholder="Full name"/>
-          <input id="email" placeholder="Email (optional)"/>
+          <input id="email" placeholder="RegNo.klu.ac.in Email"/>
           <input id="phone" placeholder="Phone (WhatsApp)"/>
           <input id="dept" placeholder="Department"/>
           <input id="regno" placeholder="Reg. No. (Unique)"/>
-          <input id="team" placeholder="Team name (choose your team)"/>
+          <input id="team" placeholder="Team name (Choose your team - type all Capital Letters (10 letters Max.)"/>
           <button class="submit" onclick="register()">Register</button>
           <div id="regNotice" class="small" style="margin-top:8px;color:green"></div>
         </section>
@@ -128,15 +128,12 @@ th{background:#f0fbff}
         <!-- CHECK-IN -->
         <section id="checkin" class="card hidden">
           <h3>QR Check-in</h3>
-          <div class="small">Scan participant QR (or enter Reg. No) to mark presence.</div>
+          <div class="small">Enter Reg. No to mark presence.</div>
           <input id="checkRegNo" placeholder="Enter Reg. No to check-in"/>
           <div style="display:flex;gap:8px;margin-top:8px">
             <button class="btn" onclick="manualCheckIn()">Check-in by RegNo</button>
-            <button class="btn" onclick="startCamera()">Start Camera (QR)</button>
-          </div>
-          <div id="cameraArea" class="small" style="margin-top:8px"></div>
-          <div id="lastScan" class="small" style="margin-top:8px"></div>
-        </section>
+            </div>
+            </section>
 
         <!-- LEADERBOARD -->
         <section id="leader" class="card hidden">
@@ -440,5 +437,6 @@ setInterval(refresh, 30000); // auto-refresh every 30s
 </script>
 </body>
 </html>
+
 
 
