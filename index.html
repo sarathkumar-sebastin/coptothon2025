@@ -1,214 +1,387 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>COPTOTHON 2025 — Drone Design & Competition</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>COPTOTHON 2025 — Live Dashboard</title>
 <style>
-body{font-family:'Segoe UI',sans-serif;margin:0;background:#eef5ff;color:#033055;}
-header{background:#003366;color:#fff;text-align:center;padding:16px;}
-nav{display:flex;justify-content:center;flex-wrap:wrap;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);}
-nav button{margin:6px;padding:10px 20px;border:none;border-radius:6px;background:#dce7ff;cursor:pointer;font-weight:600;}
-nav button.active,nav button:hover{background:#003366;color:#fff;}
-section{display:none;padding:20px;max-width:900px;margin:auto;}
-section.active{display:block;}
-input,select,textarea{padding:8px;margin:4px 0;width:100%;border:1px solid #ccc;border-radius:6px;}
-button.submit{background:#003366;color:#fff;padding:10px 20px;border:none;border-radius:6px;margin-top:8px;cursor:pointer;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th,td{border:1px solid #ccc;padding:6px;text-align:left;}
-th{background:#003366;color:#fff;}
-.adminOnly{display:none;}
-body.admin .adminOnly{display:block;}
-footer{text-align:center;font-size:13px;color:#555;margin:25px 0;}
+:root{--bg:#f6fbff;--card:#fff;--accent:#00497a;--muted:#6b7280}
+body{font-family:Inter,Segoe UI,Arial;background:var(--bg);margin:0;color:#042a3a}
+.header{background:linear-gradient(90deg,var(--accent),#00a6c2);color:#fff;padding:18px;text-align:center}
+.container{max-width:1100px;margin:18px auto;padding:12px}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.btn{padding:8px 14px;border-radius:8px;border:none;background:#e7f3fb;cursor:pointer;font-weight:700}
+.btn.active{background:var(--accent);color:#fff}
+.card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 8px 22px rgba(2,6,23,0.06);margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:14px}
+input,select,textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #d7eaf2;margin:6px 0}
+.submit{background:var(--accent);color:#fff;padding:10px;border:none;border-radius:8px;cursor:pointer}
+.small{color:var(--muted);font-size:13px}
+.hidden{display:none}
+.adminOnly{display:none}
+body.admin .adminOnly{display:block}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #eef7fb;text-align:left}
+th{background:#f0fbff}
+.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:12px}
+.partList{max-height:300px;overflow:auto}
 </style>
 </head>
 <body>
-
-<header>
-  <h2>🚀 COPTOTHON 2025 — Drone Design & Competition (VINTRA 2025)</h2>
-  <div>Organized by Department of Aeronautical Engineering, SMACE, KARE</div>
-</header>
-
-<nav>
-  <button class="tab active" data-tab="home">Home</button>
-  <button class="tab" data-tab="register">Register</button>
-  <button class="tab" data-tab="leaderboard">Leaderboard</button>
-  <button class="tab" data-tab="schedule">Schedule</button>
-  <button class="tab" data-tab="announce">Announcements</button>
-  <button class="tab" data-tab="contact">Contact</button>
-  <button class="tab adminOnly" data-tab="admin">Admin Panel</button>
-</nav>
-
-<!-- HOME -->
-<section id="home" class="active">
-  <h3>Welcome to COPTOTHON 2025</h3>
-  <p>This interactive portal provides live registration, announcements, schedule and leaderboard for the Drone Design Challenge.</p>
-  <ul>
-    <li>📅 31 Oct – 1 Nov 2025</li>
-    <li>📍 Room 5003, KARE Campus</li>
-    <li>🛩️ Design • Fabrication • Flight Performance • Innovation</li>
-  </ul>
-</section>
-
-<!-- REGISTER -->
-<section id="register">
-  <h3>Participant Registration</h3>
-  <input id="rname" placeholder="Name" />
-  <input id="remail" placeholder="Email" />
-  <input id="rphone" placeholder="Phone" />
-  <input id="rdept" placeholder="Department" />
-  <input id="rtrack" placeholder="Registration No." />
-  <input id="rteam" placeholder="Team Name (Choose your team)" />
-  <button class="submit" onclick="register()">Register & Save</button>
-</section>
-
-<!-- LEADERBOARD -->
-<section id="leaderboard">
-  <h3>Leaderboard</h3>
-  <table id="tbl">
-    <thead><tr><th>Name</th><th>Team</th><th>Track</th><th>Score</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <button class="submit" onclick="loadData()">⟳ Refresh</button>
-</section>
-
-<!-- SCHEDULE -->
-<section id="schedule">
-  <h3>Event Schedule</h3>
-  <table id="schedTbl"><thead><tr><th>Title</th><th>When</th><th>Notes</th></tr></thead><tbody></tbody></table>
-  <div class="adminOnly">
-    <h4>Add Schedule Item</h4>
-    <input id="sTitle" placeholder="Title" />
-    <input id="sWhen" placeholder="When (eg. 31 Oct 10:00 AM)" />
-    <input id="sNotes" placeholder="Notes / Venue" />
-    <button class="submit" onclick="addSchedule()">Add Schedule</button>
+  <div class="header">
+    <h1>COPTOTHON 2025 — Drone Design & Competition</h1>
+    <div class="small">Admin: sarathkumar.j@klu.ac.in</div>
   </div>
-</section>
 
-<!-- ANNOUNCEMENTS -->
-<section id="announce">
-  <h3>Announcements</h3>
-  <ul id="annList"></ul>
-  <div class="adminOnly">
-    <h4>Post Announcement</h4>
-    <input id="aTitle" placeholder="Title" />
-    <textarea id="aBody" placeholder="Announcement details..."></textarea>
-    <button class="submit" onclick="postAnn()">Post Announcement</button>
+  <div class="container">
+    <nav id="menu">
+      <button class="btn active" data-tab="home">Home</button>
+      <button class="btn" data-tab="register">Register</button>
+      <button class="btn" data-tab="checkin">QR Check-in</button>
+      <button class="btn" data-tab="leader">Leaderboard</button>
+      <button class="btn" data-tab="schedule">Schedule</button>
+      <button class="btn" data-tab="participants">Participants</button>
+      <button class="btn adminOnly" data-tab="admin">Admin Panel</button>
+    </nav>
+
+    <div class="grid">
+      <div>
+
+        <!-- HOME -->
+        <section id="home" class="card">
+          <h2>Welcome</h2>
+          <p class="small">Use this dashboard to register, check-in, and view results. Participants can register once. Admin control is secured server-side.</p>
+          <div style="margin-top:10px" class="small">
+            <b>Rounds:</b> 1) Presentation Round &nbsp; 2) Assembly & Preliminary Flight Test &nbsp; 3) Final Flight Test
+          </div>
+        </section>
+
+        <!-- REGISTER -->
+        <section id="register" class="card hidden">
+          <h3>Register (Participants)</h3>
+          <div class="small">Fill details once. Reg. No = your registration number (college reg no).</div>
+          <input id="name" placeholder="Full name"/>
+          <input id="email" placeholder="Email (optional)"/>
+          <input id="phone" placeholder="Phone (WhatsApp)"/>
+          <input id="dept" placeholder="Department"/>
+          <input id="regno" placeholder="Reg. No. (Unique)"/>
+          <input id="team" placeholder="Team name (choose your team)"/>
+          <button class="submit" onclick="register()">Register</button>
+          <div id="regNotice" class="small" style="margin-top:8px;color:green"></div>
+        </section>
+
+        <!-- CHECK-IN -->
+        <section id="checkin" class="card hidden">
+          <h3>QR Check-in</h3>
+          <div class="small">Scan participant QR (or enter Reg. No) to mark presence.</div>
+          <input id="checkRegNo" placeholder="Enter Reg. No to check-in"/>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="manualCheckIn()">Check-in by RegNo</button>
+            <button class="btn" onclick="startCamera()">Start Camera (QR)</button>
+          </div>
+          <div id="cameraArea" class="small" style="margin-top:8px"></div>
+          <div id="lastScan" class="small" style="margin-top:8px"></div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section id="leader" class="card hidden">
+          <h3>Leaderboard</h3>
+          <table id="leaderTable"><thead><tr><th>#</th><th>Name</th><th>Team</th><th>Reg. No.</th><th>Score</th></tr></thead><tbody></tbody></table>
+          <div style="margin-top:8px" class="small">Scores come from judges entries (admin).</div>
+        </section>
+
+        <!-- SCHEDULE -->
+        <section id="schedule" class="card hidden">
+          <h3>Schedule</h3>
+          <table id="sched"><thead><tr><th>Title</th><th>When</th><th>Notes</th><th class="adminOnly">Actions</th></tr></thead><tbody></tbody></table>
+
+          <div class="adminOnly" style="margin-top:10px">
+            <h4>Add Schedule</h4>
+            <input id="sTitle" placeholder="Title"/>
+            <input id="sWhen" placeholder="When"/>
+            <input id="sNotes" placeholder="Notes"/>
+            <button class="submit" onclick="addSchedule()">Add</button>
+          </div>
+        </section>
+
+        <!-- PARTICIPANTS -->
+        <section id="participants" class="card hidden">
+          <h3>Registered Participants</h3>
+          <div class="small">List updated live from Google Sheet</div>
+          <div class="partList" id="partList"></div>
+        </section>
+
+        <!-- ADMIN PANEL -->
+        <section id="admin" class="card adminOnly hidden">
+          <h3>Admin Panel</h3>
+          <div class="small">Admin functions: add/edit/delete schedule, announcements, manage scores, export data, clear all (careful).</div>
+
+          <hr/>
+          <h4>Announcements (Add / Edit / Delete)</h4>
+          <input id="annTitle" placeholder="Title"/>
+          <textarea id="annBody" placeholder="Message"></textarea>
+          <button class="submit" onclick="announceAdd()">Post Announcement</button>
+          <div id="annListAdmin" class="partList" style="margin-top:8px"></div>
+
+          <hr/>
+          <h4>Scores (Add)</h4>
+          <div class="small">Add judge scores per participant and round</div>
+          <select id="scoreParticipant"></select>
+          <select id="scoreRound"><option value="1">Round 1 (Presentation)</option><option value="2">Round 2 (Assembly)</option><option value="3">Round 3 (Flight)</option></select>
+          <input id="scoreJudge" placeholder="Judge name"/>
+          <input id="scoreTotal" placeholder="Total score (numeric)"/>
+          <input id="scoreDetails" placeholder="Details (optional)"/>
+          <button class="submit" onclick="scoreAdd()">Add Score</button>
+
+          <hr/>
+          <h4>Danger Zone</h4>
+          <button class="submit" style="background:#b81d13" onclick="clearAll()">Clear All Data</button>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+        <div class="card">
+          <h4>Quick Info</h4>
+          <div class="small">Event: COPTOTHON 2025</div>
+          <div class="small">Rounds: Presentation, Assembly/Prelim Flight, Final Flight</div>
+          <div style="margin-top:8px">
+            <button class="btn" onclick="document.querySelector('[data-tab=register]').click()">Register Now</button>
+            <button class="btn" onclick="document.querySelector('[data-tab=checkin]').click()">Start Check-in</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Export</h4>
+          <button class="btn" onclick="exportParticipants()">Download Participants CSV</button>
+          <button class="btn adminOnly" onclick="exportBackup()">Download Backup (JSON)</button>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Contact</h4>
+          <div class="small">Dr. Sarathkumar Sebastin</div>
+          <div class="small">sarathkumar.j@klu.ac.in</div>
+          <div style="margin-top:6px"><a href="https://wa.me/917639972833?text=Hello%20COPTOTHON%20Organizer" target="_blank"><button class="btn">WhatsApp Organizer</button></a></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer">© COPTOTHON 2025 • Dept. of Aeronautical Engineering</div>
   </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <h3>For more details, Contact me at</h3>
-  <p>Organizer : Mr. J. Sarathkumar Sebastin</p>
-  <p>Mail : sarathkumar.j@klu.ac.in<p>
-  <p>📞 +91 76399 72833</p>
-  <p>Volunteers Mr.Hari +91 89402 25616</p>
-  <a href="https://wa.me/917639972833?text=Hello%20COPTOTHON%20Team!" target="_blank">
-    <button class="submit">Message on WhatsApp</button>
-  </a>
-</section>
-
-<!-- ADMIN -->
-<section id="admin" class="adminOnly">
-  <h3>Admin Panel (Visible only to sarathkumar.j@klu.ac.in)</h3>
-  <button class="submit" onclick="clearAll()">🧹 Clear All Data</button>
-  <p>Use Google Sheet to review participants, attendance and scores live.</p>
-</section>
-
-<footer>© 2025 Department of Aeronautical Engineering – KARE</footer>
 
 <script>
-/* === CONFIG === */
-const SCRIPT_URL = "https://script.google.com/a/macros/klu.ac.in/s/AKfycby0AePT7tudRWXQb0Q-QFAFnejtRHc7rDwsOTuw4SkL53ZAfkz6xc6WPN2mLpJ6ULGDlQ/exec";
+/* =========== CONFIG ============= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe0DwGAedPz82zpaMjGKMmGgAyze4fxR9QUClRoyvd5-4nxGjoV5co-a4v24WfjocQZw/exec"; // <-- REPLACE with your Apps Script exec URL
 const ADMIN_EMAIL = "sarathkumar.j@klu.ac.in";
-let DATA = {};
+let STATE = { email:"", isAdmin:false, data:{} };
 
-/* === NAVIGATION === */
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+/* =========== NAV =============== */
+document.querySelectorAll('[data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=> {
+    document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  };
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('section').forEach(s=> s.classList.add('hidden'));
+    const el = document.getElementById(tab);
+    if(el) el.classList.remove('hidden');
+  });
 });
 
-/* === LOAD DATA FROM SCRIPT === */
-async function loadData(){
-  const res = await fetch(SCRIPT_URL);
-  const json = await res.json();
-  DATA = json;
-  if(json.isAdmin) document.body.classList.add("admin");
-  else document.body.classList.remove("admin");
-
-  // Leaderboard
-  const body = document.querySelector('#tbl tbody');
-  body.innerHTML = "";
-  json.data.participants.sort((a,b)=>b.Score-a.Score).forEach(r=>{
-    body.insertAdjacentHTML("beforeend",
-      `<tr><td>${r.Name}</td><td>${r.Team}</td><td>${r.Track}</td><td>${r.Score}</td></tr>`);
-  });
-
-  // Announcements
-  const alist = document.getElementById('annList');
-  alist.innerHTML = "";
-  json.data.announcements.slice().reverse().forEach(a=>{
-    alist.insertAdjacentHTML("beforeend",
-      `<li><b>${a.Title}</b> – ${a.Body}</li>`);
-  });
-
-  // Schedule
-  const sbody = document.querySelector('#schedTbl tbody');
-  sbody.innerHTML = "";
-  json.data.schedule.forEach(s=>{
-    sbody.insertAdjacentHTML("beforeend",
-      `<tr><td>${s.Title}</td><td>${s.When}</td><td>${s.Notes}</td></tr>`);
-  });
-}
-window.onload = loadData;
-
-/* === REGISTRATION === */
-function register(){
-  const data = {
-    action:"register",
-    payload:{
-      name: document.getElementById('rname').value,
-      email: document.getElementById('remail').value,
-      phone: document.getElementById('rphone').value,
-      department: document.getElementById('rdept').value,
-      track: document.getElementById('rtrack').value,
-      team: document.getElementById('rteam').value
-    }
-  };
-  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(data)}).then(()=>{alert("✅ Registered successfully!");loadData();});
-  document.querySelectorAll('#register input').forEach(i=>i.value="");
-}
-
-/* === ANNOUNCEMENT === */
-function postAnn(){
-  const payload = {title: aTitle.value, body: aBody.value};
-  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"announce",payload})})
-  .then(()=>{aTitle.value="";aBody.value="";alert("📢 Announcement posted!");loadData();});
-}
-
-/* === SCHEDULE === */
-function addSchedule(){
-  const payload = {title:sTitle.value,when:sWhen.value,notes:sNotes.value};
-  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"schedule",payload})})
-  .then(()=>{sTitle.value=sWhen.value=sNotes.value="";alert("🕓 Schedule added!");loadData();});
-}
-
-/* === CLEAR ALL === */
-function clearAll(){
-  if(confirm("⚠️ This will erase all data. Are you sure?")){
-    fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({action:"clear_all"})})
-    .then(()=>{alert("🧹 All data cleared!");loadData();});
+/* =========== API HELPERS ========= */
+async function apiGet(){
+  try{
+    const r = await fetch(SCRIPT_URL);
+    if(!r.ok) throw new Error("Network response not ok");
+    return await r.json();
+  }catch(e){
+    console.error(e);
+    alert("Error loading data. Check script URL & sheet deployment.");
+    return null;
   }
 }
+async function apiPost(action, payload){
+  try{
+    const r = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action, payload })
+    });
+    return await r.json().catch(()=> ({ raw: "ok" }));
+  }catch(e){
+    console.error(e); alert("Write failed: "+e.message); return null;
+  }
+}
+
+/* =========== RENDER ========= */
+async function refresh(){
+  const json = await apiGet();
+  if(!json) return;
+  STATE = json;
+  // admin flag
+  if(json.isAdmin) document.body.classList.add('admin'); else document.body.classList.remove('admin');
+
+  // Participants list (bottom)
+  renderParticipants(json.data.participants || []);
+
+  // Leaderboard
+  renderLeaderboard(json.data.participants || [], json.data.scores || []);
+
+  // Schedule
+  renderSchedule(json.data.schedule || []);
+
+  // Announcements (for admin area)
+  renderAdminAnnouncements(json.data.announcements || []);
+
+  // fill select for scoring
+  fillScoreParticipantSelect(json.data.participants || []);
+}
+function renderParticipants(arr){
+  const el = document.getElementById('partList'); el.innerHTML = '';
+  if(!arr || arr.length===0){ el.innerHTML = '<div class="small">No participants yet</div>'; return; }
+  arr.slice().reverse().forEach(p=>{
+    const div = document.createElement('div'); div.style.padding='8px'; div.style.borderBottom='1px solid #eef7fb';
+    div.innerHTML = `<b>${p.Name||p.Name}</b> <div class="small">${p.Department||''} • RegNo: ${p.RegNo||''} • Team: ${p.Team||''} • Score: ${p.Score||0}</div>`;
+    el.appendChild(div);
+  });
+}
+function renderLeaderboard(parts, scores){
+  // compute total per participant by summing scores rows (server also updated Score in participants)
+  const tbody = document.querySelector('#leaderTable tbody'); tbody.innerHTML = '';
+  const rows = parts.map(p=> ({ id:p.id, Name:p.Name, Team:p.Team, RegNo:p.RegNo, Score: Number(p.Score||0) }));
+  rows.sort((a,b)=>b.Score - a.Score);
+  rows.forEach((r,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${r.Name||''}</td><td>${r.Team||''}</td><td>${r.RegNo||''}</td><td>${r.Score||0}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function renderSchedule(arr){
+  const tbody = document.querySelector('#sched tbody'); tbody.innerHTML = '';
+  arr.forEach(s=>{
+    const row = document.createElement('tr');
+    let actions = '';
+    if(STATE.isAdmin) actions = `<td class="adminOnly"><button onclick="editSchedule('${s.id}')">Edit</button> <button onclick="deleteSchedule('${s.id}')">Delete</button></td>`; 
+    row.innerHTML = `<td>${s.Title||''}</td><td>${s.When||''}</td><td>${s.Notes||''}</td>${actions}`;
+    tbody.appendChild(row);
+  });
+}
+function renderAdminAnnouncements(arr){
+  const el = document.getElementById('annListAdmin'); el.innerHTML = '';
+  arr.slice().reverse().forEach(a=>{
+    const div = document.createElement('div'); div.style.padding='8px'; div.style.borderBottom='1px solid #eef7fb';
+    const btns = STATE.isAdmin ? `<div style="margin-top:6px"><button onclick="editAnn('${a.id}','${escapeHtml(a.Title||'')}','${escapeHtml(a.Body||'')}')">Edit</button> <button onclick="deleteAnn('${a.id}')">Delete</button></div>` : '';
+    div.innerHTML = `<b>${a.Title||''}</b><div class="small">${a.Body||''}</div>${btns}`;
+    el.appendChild(div);
+  });
+}
+function fillScoreParticipantSelect(parts){
+  const sel = document.getElementById('scoreParticipant'); sel.innerHTML = '';
+  parts.forEach(p => {
+    const opt = document.createElement('option'); opt.value = p.id; opt.text = `${p.Name} (${p.RegNo||''})`; sel.appendChild(opt);
+  });
+}
+
+/* =========== ACTIONS ========== */
+async function register(){
+  // prevent double-register: localStorage check
+  const regno = document.getElementById('regno').value.trim();
+  if(!document.getElementById('name').value.trim()) return alert("Name required");
+  // check server existing regno or email
+  const parts = STATE.data.participants || [];
+  if(regno && parts.find(x=> String(x.RegNo || '').trim() === regno.trim())) return alert("This Reg. No. is already registered.");
+  const payload = {
+    Name: document.getElementById('name').value.trim(),
+    Email: document.getElementById('email').value.trim(),
+    Phone: document.getElementById('phone').value.trim(),
+    Department: document.getElementById('dept').value.trim(),
+    RegNo: regno,
+    Team: document.getElementById('team').value.trim()
+  };
+  const res = await apiPost('register', payload);
+  if(res && res.status === "ok"){
+    localStorage.setItem('coptothon_regid', res.id);
+    document.getElementById('regNotice').innerText = "Registered successfully. Your ID: " + res.id;
+    refresh();
+  } else {
+    alert("Register failed: " + (res && res.message ? res.message : "unknown"));
+  }
+}
+
+async function manualCheckIn(){
+  const reg = document.getElementById('checkRegNo').value.trim();
+  if(!reg) return alert("Enter Reg. No.");
+  const res = await apiPost('attendance', { RegNo: reg });
+  if(res && res.status === "ok") {
+    document.getElementById('lastScan').innerText = "Checked-in: " + reg;
+    refresh();
+  } else alert("Check-in failed: " + (res && res.message ? res.message : "unknown"));
+}
+
+/* camera scanning omitted for brevity (can be added later) */
+
+/* admin: schedule */
+async function addSchedule(){
+  const payload = { title: document.getElementById('sTitle').value.trim(), when: document.getElementById('sWhen').value.trim(), notes: document.getElementById('sNotes').value.trim() };
+  const res = await apiPost('schedule_add', payload);
+  if(res && res.status === "ok") { alert("Added"); document.getElementById('sTitle').value='';document.getElementById('sWhen').value='';document.getElementById('sNotes').value=''; refresh(); }
+  else alert("Failed");
+}
+async function editSchedule(id){ const newTitle = prompt("Title:"); if(newTitle===null) return; const when = prompt("When:"); await apiPost('schedule_edit',{id:id,title:newTitle,when:when||"",notes:""}); refresh(); }
+async function deleteSchedule(id){ if(!confirm("Delete schedule?")) return; await apiPost('schedule_delete',{id:id}); refresh(); }
+
+/* admin: announcements */
+async function announceAdd(){
+  const title = document.getElementById('annTitle').value.trim(), body = document.getElementById('annBody').value.trim();
+  if(!title || !body) return alert("Title and body required");
+  const res = await apiPost('announce_add', { title, body });
+  if(res && res.status === "ok"){ document.getElementById('annTitle').value='';document.getElementById('annBody').value=''; refresh(); }
+  else alert("Failed");
+}
+function editAnn(id, title, body){
+  const t = prompt("Edit title:", unescapeHtml(title)); if(t===null) return;
+  const b = prompt("Edit body:", unescapeHtml(body)); apiPost('announce_edit',{id:id,title:t,body:b}).then(()=>refresh());
+}
+async function deleteAnn(id){ if(!confirm("Delete announcement?")) return; await apiPost('announce_delete',{id:id}); refresh(); }
+
+/* admin: scores */
+async function scoreAdd(){
+  const pid = document.getElementById('scoreParticipant').value;
+  const round = document.getElementById('scoreRound').value;
+  const judge = document.getElementById('scoreJudge').value.trim();
+  const total = Number(document.getElementById('scoreTotal').value);
+  const details = document.getElementById('scoreDetails').value.trim();
+  if(!pid || !round || !judge || isNaN(total)) return alert("Fill all score fields");
+  const res = await apiPost('score_add',{ participantId: pid, Round: round, Judge: judge, Total: total, Details: details });
+  if(res && res.status === "ok") { alert("Score added"); refresh(); } else alert("Failed");
+}
+
+/* admin: clear all */
+async function clearAll(){
+  if(!confirm("This will clear ALL data. Continue?")) return;
+  const res = await apiPost('clear_all', {});
+  if(res && res.status === "ok") { alert("Cleared"); refresh(); } else alert("Failed");
+}
+
+/* exports */
+function exportParticipants(){
+  const rows = (STATE.data.participants||[]).map(p=> [p.Name||"", p.Email||"", p.Phone||"", p.Department||"", p.RegNo||"", p.Team||"", p.CheckIn||"", p.Score||"", p.CreatedAt||""]);
+  const header = ["Name","Email","Phone","Department","RegNo","Team","CheckIn","Score","CreatedAt"];
+  const csv = [header].concat(rows).map(r=> r.map(c=> `"${String(c||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = "participants.csv"; a.click();
+}
+function exportBackup(){
+  const data = JSON.stringify(STATE.data, null, 2);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data],{type:'application/json'})); a.download = "coptothon_backup.json"; a.click();
+}
+
+/* util */
+function escapeHtml(s){ return String(s||'').replace(/'/g,"\\'").replace(/"/g,'\"'); }
+function unescapeHtml(s){ return String(s||'').replace(/\\'/g,"'"); }
+
+/* initial load */
+refresh();
+setInterval(refresh, 30000); // auto-refresh every 30s
 </script>
 </body>
 </html>
-
-
-
